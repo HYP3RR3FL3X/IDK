@@ -1,37 +1,37 @@
-local workspace = game:GetService("Workspace")
+-- Made by RIP#6666
+_G.Settings = {
+    Players = {
+        IgnoreMe = true, -- Ignore your Character
+        IgnoreOthers = true -- Ignore other Characters
+    },
+    DeleteEverything = true -- Delete everything in the map
+}
 
-local function findNape(hitFolder)
-    return hitFolder:FindFirstChild("Nape")
-end
+-- Function to apply the delete-everything setting
+local function applyDeleteEverything()
+    local settings = G.Settings
+    local player = game.Players.LocalPlayer
 
-local function expandNapeHitbox(hitFolder)
-    local napeObject = findNape(hitFolder)
-    if napeObject then
-        napeObject.Size = Vector3.new(105, 120, 100)
-        napeObject.Transparency = 0.96
-        napeObject.Color = Color3.new(1, 1, 1)
-        napeObject.Material = Enum.Material.Neon
-        napeObject.CanCollide = false
-        napeObject.Anchored = false
-    end
-end
-
-local function processTitans(titansBasePart)
-    for _, titan in ipairs(titansBasePart:GetChildren()) do
-        local hitboxesFolder = titan:FindFirstChild("Hitboxes")
-        if hitboxesFolder then
-            local hitFolder = hitboxesFolder:FindFirstChild("Hit")
-            if hitFolder then
-                expandNapeHitbox(hitFolder)
+    -- Ignore specified players and delete everything else
+    local function deleteEverything()
+        for , obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj.Parent == game.Players then
+                if settings.Players.IgnoreMe and obj == player.Character then
+                    -- Ignore the local player's character
+                elseif settings.Players.IgnoreOthers and obj ~= player.Character then
+                    -- Ignore other characters
+                else
+                    obj:Destroy()
+                end
+            elseif settings.DeleteEverything then
+                obj:Destroy()
             end
-Print"Executed"
         end
     end
+
+    -- Apply all settings
+    deleteEverything()
 end
 
-print("Nape Expander Loaded")
-
-local titansBasePart = workspace:FindFirstChild("Titans")
-if titansBasePart then
-    processTitans(titansBasePart)
-end
+-- Load delete-everything script
+applyDeleteEverything()
