@@ -1,120 +1,25 @@
-
-
 pcall(function()
-          repeat
-            wait()
-        until
-            game:IsLoaded() and game.Players.LocalPlayer.Character and workspace.Titans:GetChildren()
-	wait(3.5)
-	
-    local Titans = workspace:WaitForChild("Titans")
-    local Remotes = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Remotes")
-
-    -- Player Objects
-    local Player = game.Players.LocalPlayer
-    local Character = Player.Character or Player.CharacterAdded:Wait()
-    local Humanoid = Character:WaitForChild("Humanoid")
-    local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-    local PlayerGui = Player:WaitForChild("PlayerGui")
-
-    -- Variables
-    local Total = 0
-    local TitansStorage = {}
-    local TitansProcessed = 0
-
-    task.spawn(function()
-        for _, Titan in ipairs(Titans:GetChildren()) do
-            if Titan:IsA("Model") and Titan:FindFirstChild("Humanoid") then
-                TitansStorage[Titan.Name] = Titan
-            end
-        end
-
-        while true do
-            Total = #Titans:GetChildren()
-            task.wait()
-        end
-    end)
-
-    task.spawn(function()
-        local Interface = PlayerGui:FindFirstChild("Interface")
-        if Interface then
-            Interface.ChildAdded:Connect(function(Child)
-                if Child.Name == "Numbers" then
-                    task.spawn(function()
-                        while Child.Parent do
-                            Child:Destroy()
-                            task.wait()
-                        end
-                    end)
-                end
-            end)
-        end
-
-        for _, Titan in pairs(TitansStorage) do
-            local Nape = Titan.Hitboxes.Hit.Nape
-            if Nape then
-                Nape.ChildAdded:Connect(function(Child)
-                    if Child.Name == "Blood" or Child.Name == "Hit" then
-                        task.spawn(function()
-                            while Child.Parent do
-                                Child:Destroy()
-                                task.wait()
-                            end
-                        end)
-                    end
-                end)
-            end
-        end
-    end)
-
-    task.spawn(function()
-        for _, Titan in pairs(TitansStorage) do
-            local Nape = Titan.Hitboxes.Hit.Nape
-            TitansProcessed = TitansProcessed + 1
+    repeat wait() until game:IsLoaded()
+    local T = workspace:WaitForChild("Titans", 5)
+    if not T then return end
+    wait()
+    local HRP = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+    local R = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Remotes")
+    for _, v in ipairs(T:GetChildren()) do
+        local n = v:FindFirstChild("Hitboxes") and v.Hitboxes:FindFirstChild("Hit") and v.Hitboxes.Hit:FindFirstChild("Nape")
+        if n then
+            -- Removed the Blood handling logic
             task.spawn(function()
-                while Nape and Nape.Parent and Nape.Parent.Parent do
-                    Nape.Position = HumanoidRootPart.Position
-                    task.wait()
+                while n do
+                    n.Position = HRP.Position
+                    wait()
                 end
             end)
         end
-
-        local index = 0
-
-        Remotes.GET:InvokeServer("Functions", "Retry", "Add")
-
-        while TitansProcessed ~= Total do
-            task.wait()
-        end
-
-        Remotes.GET:InvokeServer("S_Skills", "Usage", "23")
-        task.wait(3)
-        Remotes.GET:InvokeServer("S_Skills", "Usage", "14")
-
-        while true do
-            for _, v in pairs(Titans:GetChildren()) do
-                if v:FindFirstChild("Humanoid") then
-                    index = index + 1
-                end
-            end
-
-            Notify("Titans Remaining", tostring(index), 5)
-            task.wait(2)
-
-            index = 0
-        end
-    end)
-
-    -- Additional Optimization
-    local Lighting = game:GetService("Lighting")
-    for _, LightObj in pairs(Lighting:GetChildren()) do
-        LightObj:Destroy()
     end
-    wait(1)
-    local UselessShit = {"Climbable", "Debris", "Points", "Platforms", "Props", "Reloads", "Trees", "U_Buildings", "Tree_Colliders", "Fake"}
-    for _, Obj in ipairs(game:GetDescendants()) do
-        if Obj:IsA("ParticleEmitter") or table.find(UselessShit, Obj.Name) then
-            Obj:Destroy()
-        end
-    end
+    R.GET:InvokeServer("S_Skills", "Usage", "23")
+    wait(2)
+    R.GET:InvokeServer("S_Skills", "Usage", "14")
+    wait(0.5)
+    R.GET:InvokeServer("Functions", "Retry", "Add")
 end)
