@@ -28,7 +28,7 @@ pcall(function()
     end
     Remotes.GET:InvokeServer("S_Skills", "Usage", "23")
     Notify("InvokeServer", "Torrential Steel Started", 5)
-    task.wait(0.5)
+    task.wait(1)
     Remotes.GET:InvokeServer("S_Skills", "Usage", "14")
     Notify("InvokeServer", "Drill Thrust Started", 5)
     task.wait(0.5)
