@@ -8,7 +8,6 @@ Notify("Script Status", "Starting the script...", 5)
 
 pcall(function()
     repeat wait() until game:IsLoaded() and game.Players.LocalPlayer.Character
-    Notify("Script Status", "Game Loaded and Character Found", 5)
     local Titans = workspace:WaitForChild("Titans", 5)
     if not Titans then Notify("Script Error", "No Titans Found", 5) return end
     wait(3.5)
