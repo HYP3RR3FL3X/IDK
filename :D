@@ -4,8 +4,6 @@ local function Notify(title, msg, dur)
     end) 
 end
 
-Notify("Script Status", "Starting the script...", 5)
-
 pcall(function()
     repeat wait() until game:IsLoaded() and game.Players.LocalPlayer.Character
     local Titans = workspace:WaitForChild("Titans", 5)
