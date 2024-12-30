@@ -1,25 +1,45 @@
+local function Notify(title, msg, dur) 
+    pcall(function() 
+        game:GetService("StarterGui"):SetCore("SendNotification", {Title=title; Text=msg; Duration=dur}) 
+    end) 
+end
+
+Notify("Script Status", "Starting the script...", 5)
+
 pcall(function()
-    repeat wait() until game:IsLoaded()
-    local T = workspace:WaitForChild("Titans", 5)
-    if not T then return end
-    wait()
-    local HRP = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-    local R = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Remotes")
-    for _, v in ipairs(T:GetChildren()) do
-        local n = v:FindFirstChild("Hitboxes") and v.Hitboxes:FindFirstChild("Hit") and v.Hitboxes.Hit:FindFirstChild("Nape")
-        if n then
-            -- Removed the Blood handling logic
-            task.spawn(function()
-                while n do
-                    n.Position = HRP.Position
-                    wait()
-                end
-            end)
+    repeat wait() until game:IsLoaded() and game.Players.LocalPlayer.Character
+    local Titans = workspace:WaitForChild("Titans", 5) if not Titans then return end wait(3.5)
+    local Player = game.Players.LocalPlayer
+    local HRP = Player.Character:WaitForChild("HumanoidRootPart")
+    local Remotes = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Remotes")
+    local TitansStorage = {}
+    local TitansProcessed = 0
+    for _, Titan in ipairs(Titans:GetChildren()) do
+        if Titan:IsA("Model") and Titan:FindFirstChild("Humanoid") then
+            TitansStorage[Titan.Name] = Titan
         end
     end
-    R.GET:InvokeServer("S_Skills", "Usage", "23")
-    wait(2)
-    R.GET:InvokeServer("S_Skills", "Usage", "14")
-    wait(0.5)
-    R.GET:InvokeServer("Functions", "Retry", "Add")
+    Notify("Hexhub", "Started "..#Titans:GetChildren().." Titans", 5)
+    for _, Titan in pairs(TitansStorage) do
+        local Nape = Titan:FindFirstChild("Hitboxes") and Titan.Hitboxes:FindFirstChild("Hit") and Titan.Hitboxes.Hit:FindFirstChild("Nape")
+        if Nape then
+            task.spawn(function() while Nape and Nape.Parent and Nape.Parent.Parent do Nape.Position = HRP.Position task.wait() end end)
+        end
+    end
+    Remotes.GET:InvokeServer("S_Skills", "Usage", "23")
+    Notify("InvokeServer", "Skill 23 Invoked", 5)
+    task.wait(3)
+    Remotes.GET:InvokeServer("S_Skills", "Usage", "14")
+    Notify("InvokeServer", "Skill 14 Invoked", 5)
+    task.wait(0.5)
+    Remotes.GET:InvokeServer("Functions", "Retry", "Add")
+    Notify("InvokeServer", "Function Retry Add Invoked", 5)
+    while true do
+        local index = 0
+        for _, v in pairs(Titans:GetChildren()) do
+            if v:FindFirstChild("Humanoid") then index = index + 1 end
+        end
+        Notify("Titans Remaining", tostring(index), 5)
+        task.wait(2)
+    end
 end)
