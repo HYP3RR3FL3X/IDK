@@ -30,13 +30,13 @@ pcall(function()
         end
     end
     Remotes.GET:InvokeServer("S_Skills", "Usage", "23")
-    Notify("InvokeServer", "Skill 23 Invoked", 5)
+    Notify("InvokeServer", "Torrential Steel Started", 5)
     task.wait(3)
     Remotes.GET:InvokeServer("S_Skills", "Usage", "14")
-    Notify("InvokeServer", "Skill 14 Invoked", 5)
+    Notify("InvokeServer", "Drill Thrust Started", 5)
     task.wait(0.5)
     Remotes.GET:InvokeServer("Functions", "Retry", "Add")
-    Notify("InvokeServer", "Function Retry Add Invoked", 5)
+    Notify("InvokeServer", "Retrying....", 5)
     while true do
         local index = 0
         for _, v in pairs(Titans:GetChildren()) do
